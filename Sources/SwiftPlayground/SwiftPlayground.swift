@@ -3,57 +3,89 @@
 
 @main
 struct SwiftPlayground {
-    static func main() {
-        //task a
+    static func main() throws {
+        let maxGuesses = 5
+        let size = 6
+        var ocean = Array(repeating: Array(repeating: "~", count: size), count: size)
+        var guesses = Array(repeating: Array(repeating: "~", count: size), count: size)
+        ocean[1][3] = "S"
+        ocean[2][3] = "S"
+        ocean[4][0] = "S"
+        ocean[5][4] = "S"
+        printBoard(guesses)
 
-        let temperatures: [[Int]] = [
-            [14,31,24,23],
-            [0,-1,5,10],
-            [45,36,20,13]
-        ]
-        //full first row
-        print(temperatures[0])
-        //row 2 column 3
-        print(temperatures[1][2])
-        //row 3 column 1
-        print(temperatures[2][0])
-        //average row 1
-        var average = 0
-        temperatures[0].forEach { temperature in 
-            average += temperature
+        var progress = 1
+        while progress <= maxGuesses {
+            print("Please enter row number and then column number:")
+            guard let userInput = readLine(), let row = Int(userInput), let userInput2 = readLine(), let column = Int(userInput2) else {
+            print("Wrong")
+            continue
+            }
+            guesses = processGuess(row: row, col: column, ocean: ocean, guesses: guesses)
+            printBoard(guesses)
+            progress += 1
+            }
         }
-        average = average / temperatures[1].count
-        print(average)
-
-        //task b
-
-        let table = [
-            [2,4,6],
-            [8,10,12],
-            [14,16,18]
-        ]
-        table.forEach {row in
-        row.forEach {value in 
-        print(value)}}
-
-        //task c
-
-        let table2 = [
-    [3, 5, 7, 9],
-    [2, 4],
-    [8, 6, 1],
-    [10]
-]
-    columnTotal(in: table2, column: 1)
     }
+
+
+func printBoard(_ board: [[String]]) {
+    var columnLabels = "  "
+    for i in 1...board.count {
+        columnLabels = columnLabels + "\(i) "
+    }
+    print(columnLabels)
+    
+    for (index, row) in board.enumerated() {
+        var rowString = "\(index + 1) "
+        for cell in row {
+            rowString = rowString + cell + " "
+        }
+        print(rowString)
+    }
+
 }
 
-func columnTotal(in table: [[Int]], column: Int) {
-    var counter = 0
-    for row in table {
-        if row.count > column {
-            counter = counter + row[column]
+func processGuess(row: Int, col: Int, ocean: [[String]], guesses: [[String]]) -> [[String]] {
+    if row >= 1, row <= ocean.count, col >= 1, col <= ocean.count {
+        if guesses[row - 1][col - 1] == "O" || guesses[row - 1][col - 1] == "X" {
+            print("You already did that")
+            return guesses
+        } else {
+            if ocean[row - 1][col - 1] == "S" {
+                var newGuesses = guesses
+                newGuesses[row-1][col-1] = "X"
+                return newGuesses
+            } else {
+                print("MISS")
+                var newGuesses = guesses
+                newGuesses[row - 1][col - 1] = "O"
+                return newGuesses
+            }
         }
     }
-    print(counter)
+    print("NAh")
+    return guesses
+}
+
+func remainingShips(in ocean: [[String]], guesses: [[String]]) -> Int {
+    var shipsCount = 0
+    for row in 0...ocean.count-1 {
+        for col in 0...row {
+            if ocean[row][col] == "S" {
+                shipsCount = shipsCount + 1
+            }
+        }
+    }
+    
+    var hitCount = 0
+    for row in 0...guesses.count-1 {
+        for col in 0...row {
+            if guesses[row][col] == "X" {
+                hitCount = hitCount + 1
+            }
+        }
+    }
+    
+    return shipsCount - hitCount
 }
