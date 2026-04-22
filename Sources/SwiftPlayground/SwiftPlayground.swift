@@ -3,89 +3,47 @@
 
 @main
 struct SwiftPlayground {
-    static func main() throws {
-        let maxGuesses = 5
-        let size = 6
-        var ocean = Array(repeating: Array(repeating: "~", count: size), count: size)
-        var guesses = Array(repeating: Array(repeating: "~", count: size), count: size)
-        ocean[1][3] = "S"
-        ocean[2][3] = "S"
-        ocean[4][0] = "S"
-        ocean[5][4] = "S"
-        printBoard(guesses)
-
-        var progress = 1
-        while progress <= maxGuesses {
-            print("Please enter row number and then column number:")
-            guard let userInput = readLine(), let row = Int(userInput), let userInput2 = readLine(), let column = Int(userInput2) else {
-            print("Wrong")
-            continue
-            }
-            guesses = processGuess(row: row, col: column, ocean: ocean, guesses: guesses)
-            printBoard(guesses)
-            progress += 1
+    static func main() {
+        ///Creating the variables to be used in code later.
+        var kumaraStock = 0
+        var kumaraStockInKg = kumaraStock / 10
+        var maximumStock = 500
+        var numberOfBags = 5000
+        //Using a variable and while loop to run a menu of choices for the stall owner.
+        var menuRunning = true
+        while menuRunning == true {
+            //Printing the options and prompting the user to choose one.
+            print("What would you like to do?")
+            print("1. Add to stock")
+            print("2. View stock")
+            print("3. Record a sale")
+            print("4. View sales records")
+            print("5. Show summary of sales")
+            print("6. Exit")
+            //Taking the users choice
+            if let userInput = readLine(), let userChoice = Int(userInput) {
+                //Allowing the user to add to stock should they so choose.
+                if userChoice == 1 {
+                    print("You currently have \(kumaraStock) kumara (\(kumaraStockInKg) kgs)")
+                    print("How many would you like to add?")
+                    if let userInput = readLine(), let addedKumara = Int(userInput), addedKumara > 0, addedKumara <= maximumStock - kumaraStock {
+                        kumaraStock = kumaraStock + addedKumara
+                        print("You have added \(addedKumara) kumara and now have \(kumaraStock) kumara")
+                    } else {
+                        print("Invalid input")
+                    }
+                //Allowing user to view the stock if it pleases them.
+                } else if userChoice == 2 {
+                    print("You currently have \(kumaraStock) kumara (\(kumaraStockInKg) kgs)")
+                //Permitting the user to record a sale if it tickles their fancy.
+                } else if userChoice == 3 {
+                    
+                //Ending the loop if the user chooses to do so.
+                } else if userChoice == 6 {
+                    print("Thank you for using the programme.")
+                    menuRunning = false
+                }
             }
         }
-    }
-
-
-func printBoard(_ board: [[String]]) {
-    var columnLabels = "  "
-    for i in 1...board.count {
-        columnLabels = columnLabels + "\(i) "
-    }
-    print(columnLabels)
-    
-    for (index, row) in board.enumerated() {
-        var rowString = "\(index + 1) "
-        for cell in row {
-            rowString = rowString + cell + " "
-        }
-        print(rowString)
-    }
-
 }
-
-func processGuess(row: Int, col: Int, ocean: [[String]], guesses: [[String]]) -> [[String]] {
-    if row >= 1, row <= ocean.count, col >= 1, col <= ocean.count {
-        if guesses[row - 1][col - 1] == "O" || guesses[row - 1][col - 1] == "X" {
-            print("You already did that")
-            return guesses
-        } else {
-            if ocean[row - 1][col - 1] == "S" {
-                var newGuesses = guesses
-                newGuesses[row-1][col-1] = "X"
-                return newGuesses
-            } else {
-                print("MISS")
-                var newGuesses = guesses
-                newGuesses[row - 1][col - 1] = "O"
-                return newGuesses
-            }
-        }
-    }
-    print("NAh")
-    return guesses
-}
-
-func remainingShips(in ocean: [[String]], guesses: [[String]]) -> Int {
-    var shipsCount = 0
-    for row in 0...ocean.count-1 {
-        for col in 0...row {
-            if ocean[row][col] == "S" {
-                shipsCount = shipsCount + 1
-            }
-        }
-    }
-    
-    var hitCount = 0
-    for row in 0...guesses.count-1 {
-        for col in 0...row {
-            if guesses[row][col] == "X" {
-                hitCount = hitCount + 1
-            }
-        }
-    }
-    
-    return shipsCount - hitCount
 }
