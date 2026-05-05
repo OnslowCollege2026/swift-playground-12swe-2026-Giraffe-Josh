@@ -3,27 +3,27 @@
 
 //The function to record a sale
 func recordSale(currentStock: Double, currentBagStock: Double, costOfKumara: Double, bagCost: Double) -> [[Double]] {
-    let isRunning = true
-    while isRunning == true {
+while true {
     print("How many kilograms of kumara is being sold?")
     //BIG ERROR!! fix later
-    if let userInput = readLine(), let kgsSold = Double(userInput), kgsSold < currentStock, kgsSold > 0 {
-        print("And how many bags are being used?")
-        if let userInput = readLine(), let bagsSold = Double(userInput), bagsSold < currentBagStock, bagsSold > 0 {
-            let totalCost = (kgsSold * costOfKumara) + (bagsSold * bagCost)
-            print("\(kgsSold) kgs of kumara are being sold in \(bagsSold) number of bags. This makes the total cost: $\(totalCost)")
-            let newStock = currentStock - kgsSold
-            if newStock <= 0 {
-                let salesThings = [
-                    [kgsSold],
-                    [bagsSold],
-                    [totalCost]
-                    ]
-                return salesThings
-            }
-        }
-        }
+    guard let userInput = readLine(), let kgsSold = Double(userInput), kgsSold <= currentStock, kgsSold > 0 else {
+        print("Invalid input or invalid amount of kumara.")
+        continue
     }
+    print("And how many bags are being used?")
+    guard let userInput = readLine(), let bagsSold = Double(userInput), bagsSold < currentBagStock, bagsSold > 0 else {
+        print("Invalid number of bags. You must have at least one bag for each 5 kgs of kumara.") 
+        continue
+        }
+    let totalCost = (kgsSold * costOfKumara) + (bagsSold * bagCost)
+    print("\(kgsSold) kgs of kumara are being sold in \(bagsSold) number of bags. This makes the total cost: $\(totalCost)")
+    let salesThings = [
+    [kgsSold],
+    [bagsSold],
+    [totalCost]
+    ]
+    return salesThings
+    } 
 }
 
 //to find the totals of rows in a 2d array.
@@ -39,7 +39,6 @@ struct SwiftPlayground {
         let kumaraCostPerKg = 3.0
         let bagCost = 0.20
         var kumaraStockInKg = 0.0
-        var kumaraStock = kumaraStockInKg * 10
         let maximumStock = 50.0
         var numberOfBags = 5000.0
         var recordOfSales: [[Double]] = []
@@ -58,30 +57,27 @@ struct SwiftPlayground {
             if let userInput = readLine(), let userChoice = Int(userInput) {
                 //Allowing the user to add to stock should they so choose.
                 if userChoice == 1 {
-                    print("You currently have \(kumaraStock) kumara (\(kumaraStockInKg) kgs)")
+                    print("You currently have \(kumaraStockInKg * 10) kumara (\(kumaraStockInKg) kgs)")
                     print("How many kgs would you like to add?")
-                    if let userInput = readLine(), let addedKumara = Double(userInput), addedKumara > 0, addedKumara <= maximumStock - kumaraStockInKg {
-                        kumaraStock = kumaraStock + addedKumara
+                    if let userInput = readLine(), let addedKumara = Double(userInput), addedKumara >= 0.1, addedKumara <= maximumStock - kumaraStockInKg {
+                        kumaraStockInKg = kumaraStockInKg + addedKumara
                         print("You have added \(addedKumara) kilograms of kumara and now have \(kumaraStockInKg) kilograms of kumara")
                     } else {
                         print("Invalid input")
                     }
                 //Allowing user to view the stock if it pleases them.
                 } else if userChoice == 2 {
-                    print("You currently have \(kumaraStock) kumara (\(kumaraStockInKg) kgs)")
+                    print("You currently have \(kumaraStockInKg * 10) kumara (\(kumaraStockInKg) kgs)")
                 //Permitting the user to record a sale if it tickles their fancy.
                 } else if userChoice == 3 {
-                    if kumaraStock > 0 {
+                    if kumaraStockInKg > 0.1 {
                     let recordedSale = recordSale(currentStock: kumaraStockInKg, currentBagStock: numberOfBags, costOfKumara: kumaraCostPerKg, bagCost: bagCost)
                     kumaraStockInKg = kumaraStockInKg - recordedSale[0][0]
                     numberOfBags = numberOfBags - recordedSale[1][0]
                     recordOfSales[0].append(contentsOf: recordedSale[0])
                     recordOfSales[1].append(contentsOf: recordedSale[1])
                     recordOfSales[2].append(contentsOf: recordedSale[2])
-                    print("You just recorded a sale i guess")
-                    } else {
-                        print("You got nothing to sell cabron")
-                    }
+                    print("You just recorded a sale.") }
                 //Allowing the user to view sales records
                 } else if userChoice == 4 {
                 print(recordOfSales)
@@ -98,7 +94,11 @@ struct SwiftPlayground {
                 } else if userChoice == 6 {
                     print("Thank you for using the programme.")
                     menuRunning = false
+                } else {
+                    print("Invalid input, please enter a number from 1 to 6.")
                 }
+            } else {
+                print("Invalid input, please enter a number from 1 to 6.")
             }
         }
 }
